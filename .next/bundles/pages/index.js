@@ -1046,32 +1046,37 @@ var Index = function Index(props) {
       fileName: _jsxFileName,
       lineNumber: 7
     }
-  }, "Batman TV Shows"), __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement("ul", {
+  }, "Steam Games for ", props.user.personaname), __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement("ul", {
     __source: {
       fileName: _jsxFileName,
       lineNumber: 8
     }
-  }, props.shows.map(function (_ref) {
-    var show = _ref.show;
+  }, props.listOfGames.map(function (game, index) {
     return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement("li", {
-      key: show.id,
+      key: game.appid,
       __source: {
         fileName: _jsxFileName,
         lineNumber: 10
       }
-    }, __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3_next_link___default.a, {
-      as: '/p/' + show.id,
-      href: '/post?id=' + show.id,
+    }, __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement("img", {
+      src: "http://media.steampowered.com/steamcommunity/public/images/apps/" + game.appid + "/" + game.img_icon_url + ".jpg",
       __source: {
         fileName: _jsxFileName,
         lineNumber: 11
       }
-    }, __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement("a", {
+    }), __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3_next_link___default.a, {
+      as: '/p/' + game.appid,
+      href: '/post?id=' + game.appid,
       __source: {
         fileName: _jsxFileName,
         lineNumber: 12
       }
-    }, show.name)));
+    }, __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement("a", {
+      __source: {
+        fileName: _jsxFileName,
+        lineNumber: 13
+      }
+    }, game.name)));
   })));
 };
 
@@ -1080,13 +1085,13 @@ Index.getInitialProps =
 _asyncToGenerator(
 /*#__PURE__*/
 __WEBPACK_IMPORTED_MODULE_0__babel_runtime_regenerator___default.a.mark(function _callee() {
-  var res, data;
+  var res, data, userRes, userData, listOfGames, userInformation;
   return __WEBPACK_IMPORTED_MODULE_0__babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return __WEBPACK_IMPORTED_MODULE_4_isomorphic_unfetch___default()('https://api.tvmaze.com/search/shows?q=batman');
+          return __WEBPACK_IMPORTED_MODULE_4_isomorphic_unfetch___default()('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=3F1EEFCCC0C8F311EFD50A76A5C26E68&steamid=76561197994457853&include_appinfo=1&format=json');
 
         case 2:
           res = _context.sent;
@@ -1095,12 +1100,51 @@ __WEBPACK_IMPORTED_MODULE_0__babel_runtime_regenerator___default.a.mark(function
 
         case 5:
           data = _context.sent;
-          console.log('Show data fetched. Count: ' + data.length);
-          return _context.abrupt("return", {
-            shows: data
-          });
+          _context.next = 8;
+          return __WEBPACK_IMPORTED_MODULE_4_isomorphic_unfetch___default()('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=3F1EEFCCC0C8F311EFD50A76A5C26E68&steamids=76561197994457853');
 
         case 8:
+          userRes = _context.sent;
+          _context.next = 11;
+          return userRes.json();
+
+        case 11:
+          userData = _context.sent;
+          listOfGames = [];
+          userInformation = {};
+          data.response.games.map(function (game, index) {
+            return listOfGames.push({
+              appid: game.appid,
+              name: game.name,
+              playtime_forever: game.playtime_forever,
+              img_icon_url: game.img_icon_url,
+              img_logo_url: game.img_logo_url,
+              has_community_visible_stats: game.has_community_visible_stats
+            });
+          });
+          userData.response.players.map(function (player, index) {
+            return userInformation = {
+              steamid: player.steamid,
+              communityvisibilitystate: player.communityvisibilitystate,
+              profilestate: player.profilestate,
+              personaname: player.personaname,
+              lastlogoff: player.lastlogoff,
+              profileurl: player.profileurl,
+              avatar: player.avatar,
+              avatarmedium: player.avatarmedium,
+              avatarfull: player.avatarfull,
+              personastate: player.personastate,
+              primaryclanid: player.primaryclanid,
+              timecreated: player.timecreated,
+              personastateflags: player.personastateflags
+            };
+          });
+          return _context.abrupt("return", {
+            listOfGames: listOfGames,
+            user: userInformation
+          });
+
+        case 17:
         case "end":
           return _context.stop();
       }

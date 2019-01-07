@@ -3,20 +3,17 @@ import fetch from 'isomorphic-unfetch'
 
 const Post = (props) => (
     <Layout>
-       <h1>{props.show.name}</h1>
-       <p>{props.show.summary.replace(/<[/]?p>/g, '')}</p>
-       <img src={props.show.image.medium}/>
+    <h1>{props.game.name}</h1>
+    <img src={props.game.header_image}/>
+    <p>DESCRIPTION: {props.game.detailed_description}</p>
     </Layout>
 )
 
 Post.getInitialProps = async function (context) {
   const { id } = context.query
-  const res = await fetch('https://api.tvmaze.com/shows/'+id)
-  const show = await res.json()
-
-  console.log('Fetched show:' + show.name)
-
-  return { show }
+  const res = await fetch('https://store.steampowered.com/api/appdetails/?format=json&appids='+id)
+  const game = await res.json()
+  return { game: game[id].data }
 }
 
 export default Post
